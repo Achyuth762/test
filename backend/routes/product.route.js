@@ -60,9 +60,8 @@ const router = express.Router();
 
 // 1. ADD PRODUCT ROUTE
 // authSeller is before the controller, as expected.
-// NOTE on 'upload.array("images", 5)': The comment in your original code used 'images',
-// but the final route used 'image'. I am keeping 'image' for consistency.
-router.post("/add-product", authSeller, upload.array("image", 5), addProduct);
+// Accept common field names used by different clients/form builders.
+router.post("/add-product", authSeller, upload.any(), addProduct);
 
 // 2. GET ALL PRODUCTS ROUTE (Public or Authenticated list)
 router.get("/list", getProducts);
@@ -74,5 +73,5 @@ router.get("/id/:id", getProductById);
 // 4. CHANGE STOCK ROUTE
 router.post("/stock", authSeller, changeStock);
 
-router.delete('/delete/:id', deleteProduct);
+router.delete("/delete/:id", deleteProduct);
 export default router;

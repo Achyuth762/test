@@ -80,7 +80,28 @@ import { cloudinary } from "../config/cloudinary.js";
 export const addProduct = async (req, res) => {
   try {
     const { name, price, offerPrice, description, category } = req.body;
-    const files = req.files || [];
+    const files = Array.isArray(req.files)
+      ? req.files
+      : [
+          ...(req.files?.image || []),
+          ...(req.files?.images || []),
+          ...(req.files?.["image[]"] || []),
+        ];
+
+    const descriptionList = Array.isArray(description)
+      ? description
+      : String(description || "")
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+
+    if (!name || !price || !offerPrice || !category || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields including at least one image are required",
+      });
+    }
+
     const image = await Promise.all(
       files.map(async (file) => {
         const uploadResult = await cloudinary.uploader.upload(file.path, {
@@ -92,15 +113,7 @@ export const addProduct = async (req, res) => {
       }),
     );
 
-    if (
-      !name ||
-      !price ||
-      !offerPrice ||
-      !description ||
-      !category ||
-      !image ||
-      image.length === 0
-    ) {
+    if (!image || image.length === 0 || descriptionList.length === 0) {
       return res.status(400).json({
         success: false,
         message: "All fields including at least one image are required",
@@ -111,7 +124,7 @@ export const addProduct = async (req, res) => {
       name,
       price,
       offerPrice,
-      description,
+      description: descriptionList,
       category,
       image,
     });
@@ -121,9 +134,10 @@ export const addProduct = async (req, res) => {
       success: true,
     });
   } catch (error) {
+    console.error("Error in addProduct:", error);
     return res
       .status(500)
-      .json({ message: "Server error", error: error.message });
+      .json({ success: false, message: error.message || "Server error" });
   }
 };
 
