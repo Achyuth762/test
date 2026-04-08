@@ -178,9 +178,6 @@
 
 // export default MyOrders;
 
-
-
-
 //1.
 // import { useContext, useEffect, useState } from "react";
 // import { dummyOrders } from "../assets/assets";
@@ -262,12 +259,10 @@
 // };
 // export default MyOrders;
 
-
-
-
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+import { getImageUrl } from "../utils/getImageUrl";
 
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
@@ -310,7 +305,7 @@ const MyOrders = () => {
           </p>
 
           {order.items
-            .filter(item => item.product) // Skip items with deleted products
+            .filter((item) => item.product) // Skip items with deleted products
             .map((item, idx) => (
               <div
                 key={idx}
@@ -323,7 +318,7 @@ const MyOrders = () => {
                     <img
                       src={
                         item.product.image?.[0]
-                          ? `http://localhost:5000/images/${item.product.image[0]}`
+                          ? getImageUrl(item.product.image[0])
                           : "/placeholder.jpg"
                       }
                       alt={item.product.name || "Product"}
@@ -332,9 +327,7 @@ const MyOrders = () => {
                   </div>
 
                   <div className="ml-4">
-                    <h2 className="text-xl font-medium">
-                      {item.product.name}
-                    </h2>
+                    <h2 className="text-xl font-medium">{item.product.name}</h2>
                     <p>{item.product.category}</p>
                   </div>
                 </div>
@@ -359,13 +352,10 @@ const MyOrders = () => {
       ))}
 
       {myOrders.length === 0 && (
-        <p className="text-center text-gray-500 mt-8">
-          No past orders found.
-        </p>
+        <p className="text-center text-gray-500 mt-8">No past orders found.</p>
       )}
     </div>
   );
 };
 
 export default MyOrders;
-

@@ -602,6 +602,7 @@ import { AppContext } from "../context/AppContext";
 import { dummyAddress } from "../assets/assets";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { getImageUrl } from "../utils/getImageUrl";
 const Cart = () => {
   const {
     products,
@@ -682,8 +683,7 @@ const Cart = () => {
         } else {
           toast.error(data.message);
         }
-      }
-      else{
+      } else {
         const { data } = await axios.post("/api/order/stripe", {
           items: cartArray.map((item) => ({
             product: item._id,
@@ -691,7 +691,7 @@ const Cart = () => {
           })),
           address: selectedAddress._id,
         });
-        if(data.success){
+        if (data.success) {
           window.location.replace(data.url);
         }
       }
@@ -728,7 +728,7 @@ const Cart = () => {
               >
                 <img
                   className="max-w-full h-full object-cover"
-                  src={`http://localhost:5000/images/${product.image[0]}`}
+                  src={getImageUrl(product.image?.[0])}
                   alt={product.name}
                 />
               </div>
@@ -748,7 +748,7 @@ const Cart = () => {
                       className="outline-none"
                     >
                       {Array(
-                        cartItems[product._id] > 9 ? cartItems[product._id] : 9
+                        cartItems[product._id] > 9 ? cartItems[product._id] : 9,
                       )
                         .fill("")
                         .map((_, index) => (

@@ -77,12 +77,10 @@
 // };
 // export default ProductList;
 
-
-
-
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 const ProductList = () => {
   const { products, fetchProducts, axios } = useContext(AppContext);
@@ -98,21 +96,29 @@ const ProductList = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Failed to update stock.");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to update stock.",
+      );
     }
   };
 
   // NEW FUNCTION: Function to delete a product
   const deleteProduct = async (id) => {
     // Confirmation prompt before deleting
-    if (!window.confirm("Are you sure you want to delete this product permanently?")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this product permanently?",
+      )
+    ) {
       return;
     }
-    
+
     try {
       // Send a DELETE request to the backend with the ID in the URL path
       const { data } = await axios.delete(`/api/product/delete/${id}`);
-      
+
       if (data.success) {
         fetchProducts(); // Refresh the product list
         toast.success(data.message);
@@ -120,7 +126,11 @@ const ProductList = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Failed to delete product.");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to delete product.",
+      );
     }
   };
 
@@ -139,7 +149,7 @@ const ProductList = () => {
                 </th>
                 <th className="px-4 py-3 font-semibold truncate">In Stock</th>
                 {/* ADDED: Action Header */}
-                <th className="px-4 py-3 font-semibold truncate">Action</th> 
+                <th className="px-4 py-3 font-semibold truncate">Action</th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
@@ -148,7 +158,7 @@ const ProductList = () => {
                   <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
                     <div className="border border-gray-300 rounded overflow-hidden">
                       <img
-                        src={`http://localhost:5000/images/${product.image[0]}`}
+                        src={getImageUrl(product.image?.[0])}
                         alt="Product"
                         className="w-16"
                       />

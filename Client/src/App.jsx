@@ -111,7 +111,7 @@ const App = () => {
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/loader" element={<Loading />} />
           <Route path="/add-address" element={<AddAddress />} />
-          <Route path="/seller-login" element={<SellerLogin/>}/>
+          <Route path="/seller-login" element={<SellerLogin />} />
           <Route
             path="/seller"
             element={isSeller ? <SellerLayout /> : <SellerLogin />}

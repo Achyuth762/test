@@ -40,7 +40,6 @@
 //   <p>{order.product?.name || 'Unnamed Product'}</p>
 // ))}
 
-
 //             <>
 //               {order.items.map((item, index) => (
 //                 <div key={index} className="flex flex-col justify-center">
@@ -85,7 +84,6 @@
 //   );
 // };
 // export default Orders;
-
 
 // import { useContext, useEffect, useState } from "react";
 // import { assets, dummyOrders } from "../../assets/assets";
@@ -213,6 +211,7 @@ import { useContext, useEffect, useState } from "react";
 import { dummyOrders } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
+import { getImageUrl } from "../../utils/getImageUrl";
 // import { IoLocationSharp } from "react-icons/io5";
 // import { MdOutlinePayment } from "react-icons/md";
 // import { FcCalendar } from "react-icons/fc";
@@ -268,7 +267,7 @@ const Orders = () => {
       <h2 className="text-2xl font-bold text-gray-800"> Orders List</h2>
 
       {orders.map((order, index) => {
-        const validItems = order.items.filter(item => item.product);
+        const validItems = order.items.filter((item) => item.product);
 
         return (
           <div
@@ -296,7 +295,7 @@ const Orders = () => {
                   <img
                     src={
                       item.product.image?.[0]
-                        ? `http://localhost:5000/images/${item.product.image[0]}`
+                        ? getImageUrl(item.product.image[0])
                         : "/placeholder.jpg"
                     }
                     alt={item.product.name}
@@ -305,7 +304,9 @@ const Orders = () => {
                   <div>
                     <p className="font-semibold">{item.product.name}</p>
                     {item.quantity > 1 && (
-                      <p className="text-sm text-indigo-500">x{item.quantity}</p>
+                      <p className="text-sm text-indigo-500">
+                        x{item.quantity}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -315,7 +316,7 @@ const Orders = () => {
             {/* Address */}
             <div className="text-sm text-gray-600">
               <p className="font-medium mb-1">
-             {order.address?.firstName} {order.address?.lastName}
+                {order.address?.firstName} {order.address?.lastName}
               </p>
               <p>
                 {order.address?.street}, {order.address?.city},{" "}
@@ -326,14 +327,17 @@ const Orders = () => {
             {/* Payment & Status */}
             <div className="flex flex-wrap justify-between items-center text-sm text-gray-700">
               <p>
-               <span className="font-medium">Payment Method:</span>{" "}
-                {order.paymentType === "online" ? "Online Payment" : order.paymentType}
+                <span className="font-medium">Payment Method:</span>{" "}
+                {order.paymentType === "online"
+                  ? "Online Payment"
+                  : order.paymentType}
               </p>
               <p>
-                 <span className="font-medium">Total:</span> ${order.amount}
+                <span className="font-medium">Total:</span> ${order.amount}
               </p>
               <p>
-                <span className="font-medium">Status:</span> {renderStatus(order.status)}
+                <span className="font-medium">Status:</span>{" "}
+                {renderStatus(order.status)}
               </p>
             </div>
           </div>

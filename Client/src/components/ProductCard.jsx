@@ -300,6 +300,7 @@
 import { useContext } from "react";
 import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
+import { getImageUrl } from "../utils/getImageUrl";
 // import { useAppContext } from "../context/appContext";
 
 const ProductCard = ({ product }) => {
@@ -310,7 +311,7 @@ const ProductCard = ({ product }) => {
       <div
         onClick={() => {
           navigate(
-            `/product/${product.category.toLowerCase()}/${product?._id}`
+            `/product/${product.category.toLowerCase()}/${product?._id}`,
           );
           scrollTo(0, 0);
         }}
@@ -325,7 +326,7 @@ const ProductCard = ({ product }) => {
 
           <img
             className="group-hover:scale-105 transition max-w-26 md:max-w-36"
-            src={`http://localhost:5000/images/${product.image[0]}`}
+            src={getImageUrl(product.image?.[0])}
             alt={product.name}
           />
         </div>

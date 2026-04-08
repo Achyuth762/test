@@ -73,31 +73,24 @@
 //   }
 // };
 
+import fs from "fs/promises";
 import Product from "../models/product.model.js";
-
-// import { v2 as cloudinary } from "cloudinary";
+import { cloudinary } from "../config/cloudinary.js";
 // add product:/api/product/add-product
 export const addProduct = async (req, res) => {
   try {
     const { name, price, offerPrice, description, category } = req.body;
-    const image = req.files?.map((file) => file.filename);
+    const files = req.files || [];
+    const image = await Promise.all(
+      files.map(async (file) => {
+        const uploadResult = await cloudinary.uploader.upload(file.path, {
+          resource_type: "image",
+        });
 
-    // let imageUrl = await Promise.all(
-    //   images.map(async (item) => {
-    //     let result = await cloudinary.uploader.upload(item.path, {
-    //       resource_type: "image",
-    //     });
-    //     return result.secure_url;
-    //   })
-    // );
-    // await Product.create({
-    //   name,
-    //   price,
-    //   offerPrice,
-    //   description,
-    //   category,
-    //   image: imageUrl,
-    // });
+        await fs.unlink(file.path).catch(() => {});
+        return uploadResult.secure_url;
+      }),
+    );
 
     if (
       !name ||
@@ -108,11 +101,12 @@ export const addProduct = async (req, res) => {
       !image ||
       image.length === 0
     ) {
-      res.status(201).json({
-        message: "Product added successfully",
-        success: true,
+      return res.status(400).json({
+        success: false,
+        message: "All fields including at least one image are required",
       });
     }
+
     await Product.create({
       name,
       price,
@@ -122,12 +116,14 @@ export const addProduct = async (req, res) => {
       image,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Product added successfully",
       success: true,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
@@ -173,7 +169,7 @@ export const changeStock = async (req, res) => {
     const product = await Product.findByIdAndUpdate(
       id,
       { inStock },
-      { new: true }
+      { new: true },
     );
     res
       .status(200)
@@ -185,7 +181,7 @@ export const changeStock = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const product = await Product.findByIdAndDelete(id);
 
     if (!product) {
@@ -203,8 +199,10 @@ export const deleteProduct = async (req, res) => {
     });
   } catch (error) {
     // Handle invalid ID format
-    if (error.name === 'CastError') {
-      return res.status(400).json({ success: false, message: 'Invalid product ID format.' });
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid product ID format." });
     }
     res.status(500).json({ message: "Server error", error: error.message });
   }

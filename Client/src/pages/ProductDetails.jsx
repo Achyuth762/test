@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { Link, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { getImageUrl } from "../utils/getImageUrl";
 
 const ProductDetails = () => {
   const { products, navigate, addToCart } = useContext(AppContext);
@@ -12,7 +13,7 @@ const ProductDetails = () => {
   const product = products.find((product) => product._id === id);
 
   useEffect(() => {
-    setThumbnail(product?.image[0] ? product.image[0] : null);
+    setThumbnail(product?.image?.[0] ? product.image[0] : null);
   }, [product]);
 
   return (
@@ -33,13 +34,11 @@ const ProductDetails = () => {
               {product.image.map((image, index) => (
                 <div
                   key={index}
-                  onClick={() =>
-                    setThumbnail(`http://localhost:5000/images/${image} `)
-                  }
+                  onClick={() => setThumbnail(image)}
                   className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
                 >
                   <img
-                    src={`http://localhost:5000/images/${product.image[0]}`}
+                    src={getImageUrl(product.image?.[0])}
                     alt={`Thumbnail ${index + 1}`}
                   />
                 </div>
@@ -48,7 +47,7 @@ const ProductDetails = () => {
 
             <div className="border border-gray-500/30 max-w-100 rounded overflow-hidden">
               <img
-                src={`http://localhost:5000/images/${thumbnail}`}
+                src={getImageUrl(thumbnail)}
                 alt="Selected product"
                 className="w-full h-full object-cover"
               />
@@ -71,7 +70,7 @@ const ProductDetails = () => {
                         key={i}
                         className="w-3.5 md:w-4"
                       />
-                    )
+                    ),
                 )}
 
               <p className="text-base ml-2">(4)</p>
